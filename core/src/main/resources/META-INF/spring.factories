@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.blackbaka.sc.core.config.SwaggerConfiguration,\
+  com.blackbaka.sc.core.config.FeignConfiguration,\
+  com.blackbaka.sc.core.config.ExceptionHandleConfiguration
