@@ -2,7 +2,6 @@ package com.blackbaka.sc.core.util;
 
 
 import com.blackbaka.sc.core.enums.ServiceEnum;
-import com.blackbaka.sc.core.result.EnumItem;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +34,6 @@ public class EnumUtil {
 
     // 实现ServiceEnum接口的枚举类的label做key
     private static Map<LKey, Value> labelMap = Collections.unmodifiableMap(new HashMap<>());
-
-    // 实现ServiceEnum接口的枚举类的Class Name做key，枚举类的values()做value
-    private static Map<String, List<EnumItem>> enumDict = Collections.unmodifiableMap(new HashMap<>());
 
     // 实现ServiceEnum接口的枚举类Class SimpleName做Key，枚举类Class做value
     private static Map<String, Class<? extends ServiceEnum<?>>> enumMap = Collections.unmodifiableMap(new HashMap<>());
@@ -108,7 +104,6 @@ public class EnumUtil {
 
         Map<VKey, Value> vMap = new HashMap<>();
         Map<LKey, Value> lMap = new HashMap<>();
-        Map<String, List<EnumItem>> esMap = new HashMap<>();
         Map<String, Class<? extends ServiceEnum<?>>> eMap = new HashMap<>();
         for (Class<T> clazz : classes) {
             if (clazz == null) {
@@ -120,16 +115,13 @@ public class EnumUtil {
                 if (items == null || items.length <= 0) {
                     continue;
                 }
-                List<EnumItem> enumItems = new ArrayList<>(items.length);
                 for (T item : items) {
                     VKey vKey = new VKey(clazz.getName(), item.getValue());
                     LKey lKey = new LKey(clazz.getName(), item.getLabel());
                     Value<T, U> value = new Value<>(item, item.getValue(), item.getLabel());
                     vMap.put(vKey, value);
                     lMap.put(lKey, value);
-                    enumItems.add(new EnumItem(item.getValue(), item.getLabel()));
                 }
-                esMap.put(clazz.getName(), enumItems);
                 eMap.put(clazz.getSimpleName(), clazz);
             } catch (Exception e) {
                 // do nothing
@@ -138,12 +130,10 @@ public class EnumUtil {
 
         vMap.putAll(valueMap);
         lMap.putAll(labelMap);
-        esMap.putAll(enumDict);
         eMap.putAll(enumMap);
 
         EnumUtil.valueMap = Collections.unmodifiableMap(vMap);
         EnumUtil.labelMap = Collections.unmodifiableMap(lMap);
-        EnumUtil.enumDict = Collections.unmodifiableMap(esMap);
         EnumUtil.enumMap = Collections.unmodifiableMap(eMap);
 
         log.info("EnumUtil 枚举缓存已重新构建");
@@ -264,35 +254,6 @@ public class EnumUtil {
 
     }
 
-    /**
-     * 通过枚举类获取前端菜单列表Select-Options
-     *
-     * @param clazz 枚举类
-     * @return 前端菜单列表Select-Options
-     */
-    public static <T extends ServiceEnum<U>, U> List<EnumItem> getOptions(Class<T> clazz) {
-        if (clazz == null) {
-            return new ArrayList<>();
-        }
-
-        List<EnumItem> enumItems = enumDict.get(clazz.getName());
-        if (enumItems != null) {
-            return enumItems;
-        }
-
-        try {
-            Method values = clazz.getMethod("values");
-            T[] items = (T[]) values.invoke(null, null);
-            enumItems = new ArrayList<>();
-            for (T item : items) {
-                enumItems.add(new EnumItem(item.getValue(), item.getLabel()));
-            }
-            return enumItems;
-        } catch (Exception ex) {
-            //失败返回数据为空的List即可
-            return new ArrayList<>();
-        }
-    }
 
     /**
      * 通过label获取对应枚举的value值

@@ -23,13 +23,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfiguration {
 
-    @Value("${wochanye.swagger.title:文档}")
+    @Value("${swagger.title:文档}")
     private String title;
 
-    @Value("${wochanye.swagger.description:文档}")
+    @Value("${swagger.description:文档}")
     private String description;
 
-    @Value("${wochanye.swagger.version:V1.0}")
+    @Value("${swagger.version:V1.0}")
     private String version;
 
     @Bean
